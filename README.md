@@ -1,74 +1,106 @@
-# React + TypeScript + Vite
+# 📊 Revenue Optimization Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A real-time hotel revenue management dashboard built with **React 19**, **TypeScript**, and **Tailwind CSS**. It simulates a live property, streaming KPI updates, new bookings, and chart data every few seconds — giving hotel managers an at-a-glance view of occupancy, pricing, and revenue performance.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## ✨ Features
 
-## React Compiler
+- **Live KPI Cards** — Occupancy Rate, Average Daily Rate (ADR), RevPAR, and Today's Total Revenue update automatically every 3 seconds.
+- **Booking Activity Chart** — Bar chart showing room activity trends across time slots.
+- **Booking Velocity Chart** — Line chart tracking the pace at which bookings are being made.
+- **Channel Distribution Chart** — Doughnut chart breaking down bookings by acquisition channel (Direct, OTA, Corporate, etc.).
+- **Bookings Table** — A searchable, live-updating table of recent bookings with guest name, room type, nights, rate, status, and channel.
+- **Rate Optimizer** — A one-click rate recommendation panel that applies a pricing adjustment (+$15 ADR) and reflects the change across all metrics in real time.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🏗️ Project Structure
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+src/
+├── components/
+│   ├── ActivityChart.tsx     # Bar chart – daily booking activity
+│   ├── BookingsTable.tsx     # Searchable live bookings table
+│   ├── ChannelChart.tsx      # Doughnut chart – channel distribution
+│   ├── Header.tsx            # Top navigation bar
+│   ├── KpiCards.tsx          # KPI metric cards (Occupancy, ADR, RevPAR, Revenue)
+│   ├── RateOptimizer.tsx     # Rate recommendation widget
+│   ├── Sidebar.tsx           # Left navigation sidebar
+│   └── VelocityChart.tsx     # Line chart – booking velocity
+├── constants/
+│   ├── chartData.ts          # Initial seed data for charts
+│   └── data.ts               # Booking seed data, constants & helpers
+├── hooks/
+│   └── useLiveDashboard.ts   # Core state & simulation logic (setInterval)
+├── types/
+│   └── index.ts              # TypeScript interfaces (Booking, etc.)
+├── App.tsx                   # Root layout – assembles all components
+└── main.tsx                  # React entry point
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## ⚙️ How It Works
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+### Live Data Simulation (`useLiveDashboard`)
+
+All real-time behaviour is driven by a single custom hook — [`useLiveDashboard`](./src/hooks/useLiveDashboard.ts). It runs a `setInterval` every **3 seconds** that:
+
+1. **Fluctuates KPIs** — Occupancy Rate and ADR drift randomly within realistic bounds. RevPAR and Rooms Sold are derived values computed with `useMemo`.
+2. **Generates new bookings** — With ~45% probability per tick, a new booking with a random guest, room type, channel, and rate is prepended to the bookings list.
+3. **Updates charts** — Activity chart data points shift slightly; velocity chart scrolls forward by one data point, simulating a rolling window.
+
+### Rate Optimizer
+
+Clicking **Apply Recommendation** in the Rate Optimizer panel calls `applyRateRecommendation()`, which increments the ADR by $15. Because RevPAR is computed as `ADR × Occupancy%`, both metrics update immediately across the dashboard.
+
+### Search & Filtering
+
+The bookings table uses a `useMemo`-derived `filteredBookings` array that re-filters on every keystroke against guest name, booking ID, room type, and channel.
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js ≥ 18
+- Yarn
+
+### Install & Run
+
+```bash
+# Install dependencies
+yarn install
+
+# Start the development server
+yarn dev
 ```
-# dashboard-revopt
+
+The app will be available at `http://localhost:5173`.
+
+### Build for Production
+
+```bash
+yarn build
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| React 19 | UI framework |
+| TypeScript | Type safety |
+| Vite | Build tool & dev server |
+| Tailwind CSS 3 | Utility-first styling |
+| Chart.js + react-chartjs-2 | Data visualizations |
+| Yarn | Package manager |
+
+---
+
+## 📄 License
+
+MIT
